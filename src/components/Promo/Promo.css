@@ -1,0 +1,35 @@
+.promo {
+    height: 524px;
+    background-color: #073042;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 58px;
+    color: #FFFFFF;
+    text-align: center;
+    display: flex;
+    align-content: center;
+    background-image: url('../../images/promo.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto;
+    flex-wrap: wrap;
+    padding: 0 calc((100vw - 730px)/2);
+    margin: 0;
+}
+
+@media screen and (max-width:1023px) {    
+    .promo {
+        height: 784px;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .promo {
+        height: 570px;
+        font-size: 31px;
+        line-height: 39px;
+        padding: 0 calc((100vw - 300px)/2);
+    }
+}

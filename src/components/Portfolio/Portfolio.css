@@ -1,0 +1,112 @@
+.portfolio {
+    margin: 0 70px 125px;
+}
+
+.portfolio__title {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 20px;
+    color: #8B8B8B;
+    mix-blend-mode: normal;
+    margin: 0 0 50px;
+}
+
+.portfolio__items {
+    padding: 0;
+    margin: 0;
+}
+
+.portfolio__item {
+    list-style: none;
+    padding: 20px 0;
+    border-bottom: 1px solid #424242;
+}
+
+.portfolio__item:last-of-type {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.portfolio__item:first-of-type {
+    padding-top: 0;
+}
+
+.portfolio__item-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.portfolio__link-title {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 50px;
+    letter-spacing: -0.04em;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.portfolio__link-icon {
+    background-image: url(../../images/linkArrow.svg);
+    width: 29px;
+    height: 60px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@media screen and (max-width:1279px) {    
+    .portfolio {
+        margin: 0 50px 90px;
+    }
+}
+
+@media screen and (max-width:1023px) {    
+    .portfolio {
+        margin: 0 70px 90px;
+    }
+    
+    .portfolio__title {
+        font-size: 18px;
+        line-height: 20px;
+        margin: 0 0 50px;
+    }
+      
+    .portfolio__link-title {
+        font-size: 28px;
+        line-height: 50px;
+
+    }
+    
+    .portfolio__link-icon {
+        width: 27px;
+        height: 60px;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .portfolio {
+        margin: 0 14px 70px;
+    }
+    
+    .portfolio__title {
+        font-size: 14px;
+        line-height: 20px;
+        margin: 0 0 40px;
+    }
+      
+    .portfolio__link-title {
+        font-size: 18px;
+        line-height: 28px;
+
+    }
+    
+    .portfolio__link-icon {
+        width: 18px;
+        height: 28px;
+    }
+}

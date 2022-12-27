@@ -1,0 +1,215 @@
+.search-form {
+    margin: 70px;
+    height: 72px;
+    background-color: #2F2F2F;
+    border-radius: 9px;
+    display: grid;
+    grid-template-columns: 1fr fit-content(257px);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search-form__icon {
+    background-image: url(../../images/findicon_small.svg);
+    height: 34px;
+    width: 34px;
+    margin: 0 10px 0 19px;
+    padding: 0;
+}
+
+.search-form__inputs {
+    border: none;
+    display: grid;
+    grid-template-columns: 63px 1fr 80px;
+    padding: 0;
+    margin: 0;
+    height: 34px;
+}
+
+.search-form__input {
+    padding: 0;
+    border: none;
+    margin: 0;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 20px;
+    color: #FFFFFF;
+    background: none;
+}
+
+.search-form__input::placeholder {
+    color: #8B8B8B;
+}
+
+.search-form__input:focus {
+    outline-style: none;
+}
+
+.search-form__input_active::placeholder {
+    color: #EE3465
+}
+
+.search-form__button {
+    border: none;
+    background-color:  #4285F4;
+    background-image: url(../../images/findicon.svg);
+    width: 34px;
+    height: 34px;
+    border-radius: 48px;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-left: 46px;
+    padding: 0;
+}
+
+.search-form__button:hover {
+    opacity: 0.85;
+    transition: opacity 0.5s;
+    cursor: pointer;
+}
+
+.search-form__button:disabled,  .search-form__button:disabled:hover{
+    background-color: #424242;
+    background-image: url(../../images/findicon_d.svg);
+    opacity: 1;
+    border: none;
+    cursor: default;
+}
+
+.search-form__checkbox-container {
+    margin: 0 30px;
+    height: 40px;
+    padding-left: 29px;
+    border-left: 1px solid #424242;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.search-form__checkbox-name {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    margin: 0 0 0 14px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    color: #FFFFFF;
+}
+
+.search-form__checkbox{
+    width: 36px;
+    height: 20px;
+    background-image: url(../../images/smalltumb.svg);
+    border: none;
+    background-color: #2F2F2F;
+    background-size: cover;
+    padding: 0;
+    background-repeat: no-repeat;
+}
+
+.search-form__checkbox_off{
+    background-image: url(../../images/smalltumboff.svg);
+}
+
+.search-form__afterline {
+    border-bottom: 1px solid #424242;
+    margin: 0 70px;
+}
+
+@media screen and (max-width:1279px) {    
+    .search-form {
+        margin: 50px;
+    }
+    
+    .search-form__checkbox-container {
+        margin: 0 25px;
+        padding-left: 25px;
+    }
+    
+    .search-form__afterline {
+        margin: 0 50px;
+    }
+}
+
+
+@media screen and (max-width:1023px) {    
+    .search-form {
+        margin: 30px;
+    }
+    
+    .search-form__checkbox-container {
+        margin: 0 19px;
+        padding-left: 19px;
+    }
+    
+    .search-form__afterline {
+        margin: 0 30px;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .search-form {
+        margin: 80px 10px 44px;
+        height: fit-content;
+        background-color: #202020;
+        border-radius: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .search-form__icon {
+        display: none;
+    }
+    
+    .search-form__inputs {
+        background-color: #2F2F2F;
+        border-radius: 9px;
+        width: 100%;
+        height: 72px;
+        border: none;
+        display: grid;
+        grid-template-columns: 1fr 99px;
+        margin: 0;
+    }
+    
+    .search-form__input {
+        margin: 25px 19px;
+        font-size: 14px;
+    }  
+        
+    .search-form__button {
+        margin: 19px 19px 19px 46px;
+    }
+    
+    .search-form__button:hover {
+        opacity: 0.85;
+        transition: opacity 0.5s;
+        cursor: pointer;
+    }
+      
+    .search-form__checkbox-container {
+        margin: 45px 0 0;
+        height: 20px;
+        padding: 0;
+        border-left: none;
+    }
+    
+    .search-form__checkbox-name {
+        font-size: 11px;
+    }
+    
+    .search-form__checkbox{
+        background-color: #202020;
+        background-image: url(../../images/smalltumb_320.svg);
+    }
+    .search-form__checkbox_off{
+        background-image: url(../../images/smalltumboff_320.svg);
+    }
+
+    .search-form__afterline {
+        margin: 0 10px;
+    }
+}

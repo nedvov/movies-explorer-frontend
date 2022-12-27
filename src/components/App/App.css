@@ -1,0 +1,8 @@
+.page {
+    background-color: #202020;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
