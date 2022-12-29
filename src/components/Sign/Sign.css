@@ -1,0 +1,170 @@
+.sign {
+    display: block;
+    width: 396px;
+    height: fit-content;
+    margin: 0 auto;
+}
+
+.sign__title {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+    color: #FFFFFF;
+    margin: 0 auto 40px;
+    box-sizing: border-box;
+}
+
+.sign__form {
+    margin: 0;
+    clear: both;
+}
+
+.sign__input {
+    padding: 0 0 10px;
+    border: none;
+    border-bottom: 1px solid #424242;
+    margin: 0;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #FFFFFF;
+    background: none;
+}
+
+.sign__input:focus {
+    outline-style: none;
+    border-bottom: 1px solid #4285F4
+}
+
+.sign__input-name {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 12px;
+    color: #8B8B8B;
+    margin: 0 0 5px;
+}
+
+.sign__input_active:invalid {
+    color: #EE3465
+}
+
+.sign__input-error {
+    min-height: 24px;
+    margin: 0;
+    padding: 6px 0;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 12px;
+    color: #EE3465;
+}
+
+.sign__inputs {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+.sign__link-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.sign__link-description {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    color: #8B8B8B;
+    margin: 0;
+}
+
+.sign__link {
+    display: block;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #4285F4;
+    margin: 0 0 0 6px;
+    text-decoration: none;
+    transition: opacity 0.5s;
+}
+
+.sign__link:hover {
+    opacity: 0.6;    
+    cursor: pointer;  
+}
+
+.sign__save-button {
+    padding: 0;
+    border: none;
+    margin: 192px 0 16px;
+    background-color:  #4285F4;
+    width: 100%;
+    height: 45px;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    color: #FFFFFF;
+    border-radius: 3px;
+}
+
+.sign__save-button_closer {
+    margin-top: 111px;
+}
+
+.sign__save-button:hover {
+    opacity: 0.85;
+    transition: opacity 0.5s;
+    cursor: pointer;
+}
+
+.sign__save-button:disabled,  .sign__save-button:disabled:hover{
+    background-color: #424242;
+    opacity: 1;
+    border: none;
+    cursor: default;
+}
+
+@media screen and (max-width:767px) {
+    .sign {
+        width: 260px;
+    }
+    
+    .sign__title {
+        margin: 0 auto 80px;
+        text-align: center;
+    }
+    
+    .sign__link-description {
+        font-size: 12px;
+        line-height: 15px;
+    }
+    
+    .sign__link {
+        font-size: 12px;
+        line-height: 15px;
+    }
+    
+    .sign__save-button {
+        font-size: 12px;
+        line-height: 15px;
+    }
+}
