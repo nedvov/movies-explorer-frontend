@@ -3,7 +3,7 @@
     justify-content: space-between;
     display: flex;
     height: 74px;
-    padding: 0 70px;
+    padding: 0 calc((100vw - 1140px)/2);
     background-color: #202020;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .header_form {
-    height: 148px;
+    height: 310px;
     width: 396px;
     margin: 0 auto;
     padding: 0px;

@@ -13,12 +13,14 @@ function MoviesCard({ movie, type }) {
     
 
     return (
-        <div className="movies__item" id={movie.id}>
-            <img
-                className="movies__image"
-                src={"https://api.nomoreparties.co" + movie.image.url}
-                alt={movie.nameRU}
-            />
+        <li className="movies__item" id={movie.id}>
+            <a href={movie.trailerLink} target="_blank" rel="noreferrer">
+                <img
+                    className="movies__image"
+                    src={"https://api.nomoreparties.co" + movie.image.url}
+                    alt={movie.nameRU}
+                />
+            </a>            
             <div className="movies__info">
                 <div className="movies__container">
                     <h2 className="movies__title">{movie.nameRU}</h2>
@@ -37,7 +39,7 @@ function MoviesCard({ movie, type }) {
                     type="button"
                 />
             </div>
-        </div>   
+        </li>   
     );
 }
 

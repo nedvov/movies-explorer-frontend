@@ -14,7 +14,7 @@ function Navigation() {
     }
 
     return (
-        <>
+    <>
         <div className={isBurgerOpened ? "navigation navigation_opened" : "navigation"}>
                 <nav className="navigation__links">
                     <NavLink to="/" className="navigation__link navigation__link_hidden">Главная</NavLink>

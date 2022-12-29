@@ -1,6 +1,7 @@
 .section-title {
     border-bottom: 2px solid #DADADA;
-    margin: 0;
+    margin: 0 auto;
+    max-width: 1140px;
 }
 
 .section-title__text {

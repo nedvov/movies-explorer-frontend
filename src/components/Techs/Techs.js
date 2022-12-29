@@ -10,8 +10,8 @@ function Techs() {
             <p className="techs__tittle">{techs.title}</p>
             <p className="techs__text">{techs.description}</p>
             <ul className="techs__items">
-                {techs.items.map((tech) => 
-                    <li className="techs__item">{tech}</li>                
+                {techs.items.map((tech, i) => 
+                    <li key={i} className="techs__item">{tech}</li>               
                 )}
             </ul>   
         </section>

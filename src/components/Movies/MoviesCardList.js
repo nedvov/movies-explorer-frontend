@@ -38,13 +38,13 @@ function MoviesCardList({ movies, type }) {
     });
 
     return (
-        <>
-            <section className="movies">{moviesElements}</section>
+        <main className="movies">
+            <ul className="movies__items">{moviesElements}</ul>
             {
                 ((moviesCount < movies.length) && type !== "saved") &&
                 <button className="movies__button" onClick={handleAddClick} type="button">Ещё</button>
             }            
-        </>
+        </main>
        
     );
 }

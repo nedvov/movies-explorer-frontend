@@ -22,7 +22,6 @@ function AboutProject() {
                 <p className="about-project__timetable-agenda">Back-end</p>
                 <p className="about-project__timetable-agenda">Front-end</p>
             </div>
-
         </section>        
     );
 }

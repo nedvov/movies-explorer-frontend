@@ -9,7 +9,7 @@ function Page404() {
     };
     
     return (
-        <div className="page404__container">
+        <div className="page404">
             <p className="page404__title">404</p>
             <p className="page404__text">Страница не найдена</p>   
             <button
@@ -19,8 +19,6 @@ function Page404() {
             >
             Назад
             </button>
-
-
         </div>
     );
 }

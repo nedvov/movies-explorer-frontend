@@ -1,5 +1,6 @@
 .about-project { 
-    margin: 110px 70px;
+    margin: 110px auto;
+    max-width: 1140px;
 }
 
 .about-project__stages { 

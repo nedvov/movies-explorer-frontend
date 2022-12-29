@@ -1,5 +1,6 @@
 .portfolio {
-    margin: 0 70px 125px;
+    margin: 0 auto 125px;
+    max-width: 1140px;
 }
 
 .portfolio__title {

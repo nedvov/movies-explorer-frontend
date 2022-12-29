@@ -31,7 +31,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
     }, []);
 
     return (
-        <div className="profile__container">
+        <main className="profile">
             <h2 className="profile__title">Привет, Владимир!</h2>
             <form
                 className="profile__form"
@@ -118,7 +118,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                     }                                        
                 </fieldset>
             </form>          
-        </div>
+        </main>
     );
 }
 

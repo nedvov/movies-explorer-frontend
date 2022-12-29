@@ -20,7 +20,7 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
     }, []);
 
     return (
-        <div className="sign__container">
+        <main className="sign">
             <h2 className="sign__title">{title}</h2>
             <form
                 className="sign__form"
@@ -130,7 +130,7 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                     {linkText}
                 </Link>
             </div>           
-        </div>
+        </main>
     );
 }
 

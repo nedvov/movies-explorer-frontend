@@ -34,6 +34,6 @@ export const portfolio = [
         siteUrl: "https://nedvov.github.io/russian-travel/index.html",
     },{
         siteName: "Одностраничное приложение",
-        siteUrl: "https://nedvov.github.io/sign-in",
+        siteUrl: "https://nedvov.github.io/mesto-react",
     },
 ]
