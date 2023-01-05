@@ -1,15 +1,15 @@
 import React from "react";
 import { useFormAndValidation } from "../../hooks/useFormAndValidation";
 
-function SearchForm({onSubmit, isCheckboxOn, handleCheckbox }) { 
+function SearchForm({onSubmit, isCheckboxOn, handleCheckbox, type }) { 
     
     const { values, handleChange, isValid, resetForm, setIsValid } =
         useFormAndValidation();
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (values.name) {
-            onSubmit(values.name, isCheckboxOn);
+        if (values.name || type === "saved") {
+            onSubmit(values.name);
         } else {
             setIsValid({name: false})           
         }

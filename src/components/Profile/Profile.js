@@ -1,5 +1,6 @@
 import React from "react";
 import { useFormAndValidation } from "../../hooks/useFormAndValidation";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 
 function Profile({ onSubmit, buttonText, onButtonClick }) {
     const [isOnEdit, setIsOnEdit] = React.useState(false);
@@ -12,6 +13,8 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
         (!isValid.name && isValid.email) ? `Name: ${errors.name}` :
         (!isValid.name && !isValid.email) && `Email: ${errors.email} и Name: ${errors.name}`;
  
+    const currentUser = React.useContext(CurrentUserContext);
+
     function handleSubmit(e) {
         e.preventDefault();
         setIsOnEdit(false);
@@ -24,7 +27,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
 
     React.useEffect(() => {
         resetForm(
-            { email: "", name: "" },
+            { email: currentUser.email, name: currentUser.name },
             { email: "", name: "" },
             { email: true, name: true }
         );
@@ -32,7 +35,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
 
     return (
         <main className="profile">
-            <h2 className="profile__title">Привет, Владимир!</h2>
+            <h2 className="profile__title">{`Привет, ${currentUser.name}!`}</h2>
             <form
                 className="profile__form"
                 id={`profile-form`}
@@ -51,7 +54,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                                 }
                                 id={`profile-name`}
                                 name="name"
-                                value={values.name ? values.name : "Владимир"}
+                                value={values.name ? values.name : ""}
                                 required
                                 minLength="2"
                                 maxLength="30"

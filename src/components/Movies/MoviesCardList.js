@@ -1,7 +1,7 @@
 import React from "react";
 import MoviesCard from "./MoviesCard";
 
-function MoviesCardList({ movies, type }) {    
+function MoviesCardList({ movies, type, onSave, onDelete, onRender }) {    
    
     const [width, setWidth] = React.useState(window.innerWidth);    
 
@@ -19,16 +19,17 @@ function MoviesCardList({ movies, type }) {
 
     function updateWidth () { 
         setWidth(window.innerWidth);
-        console.log(width);
     }; 
 
     const slicedMovies = type !== "saved" ? movies.slice(0, moviesCount) : movies;
 
     const moviesElements = slicedMovies.map((movie) => (
         <MoviesCard
-            key={movie.id}
+            key={type === "saved" ? movie.movieId : movie.id}
             movie={movie}
             type={type}
+            onSave={onSave}
+            onDelete={onDelete}
         />
     ));
 
@@ -36,6 +37,13 @@ function MoviesCardList({ movies, type }) {
         window.addEventListener("resize", updateWidth); 
         return () => window.removeEventListener("resize", updateWidth);
     });
+
+    React.useEffect(() => {
+        if (type === "saved" && movies.length === 0) {
+            onRender();
+            console.log(`saved: ${movies.length}`)
+        }         
+    }, [movies.length, type]);
 
     return (
         <main className="movies">

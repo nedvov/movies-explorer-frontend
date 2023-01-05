@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import Header from "../Header/Header";
-import Navigation from "../Navigation/Navigation";
 import Main from "../Main/Main";
 import Footer from "../Footer/Footer";
 import Sign from "../Sign/Sign";
@@ -10,15 +9,24 @@ import MoviesCardList from "../Movies/MoviesCardList";
 import Preloader from "../Preloader/Preloader";
 import Profile from "../Profile/Profile";
 import Page404 from "../Page404/Page404";
-import { films } from "../../consts/movies";
-import { films2 } from "../../consts/movies2";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import { mainApi } from "../../utils/MainApi";
+import { moviesApi } from "../../utils/MoviesApi";
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useMoviesFilter } from "../../hooks/useMoviesFilter";
 
 function App() {
     const [isRenderLoading, setIsRenderLoading] = React.useState(false);
-    const [movies, setMovies] = React.useState(films);
-    const [savedMovies, setSavedMovies] = React.useState(films2);
-    const [isCheckboxOn, setIsCheckboxOn] = React.useState(false);
-    const [isSavedCheckboxOn, setIsSavedCheckboxOn] = React.useState(false);
+    const { 
+            setInitialMovies, 
+            savedMovies, 
+            setSavedMovies, 
+            filteredMovies, 
+            isCheckboxOn, 
+            setIsCheckboxOn,
+            setFilterName,
+            filteredSavedMovies,
+        } = useMoviesFilter(); 
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState({
         name: "",
@@ -27,15 +35,31 @@ function App() {
     const history = useHistory();
 
     const handleSignIn = (password, email) => {
-        setIsRenderLoading(!isRenderLoading);
+        setIsRenderLoading(true);
+        mainApi
+            .signIn(password, email)
+            .then((data) => {
+                localStorage.setItem("token", data.token);                
+                setIsLoggedIn(true);
+                history.push("/movies");
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+            .finally(() => setIsRenderLoading(false));
     };
 
     const handleSignUp = (password, email, name) => {
-        setIsRenderLoading(!isRenderLoading);
-    };
-
-    const handleUpdate = (email, name) => {
-        setIsRenderLoading(!isRenderLoading);
+        setIsRenderLoading(true);
+        mainApi
+            .signUp(password, email, name)
+            .then(() => {
+                console.log("Успешно")
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+            .finally(() => setIsRenderLoading(false));
     };
 
     const handleSignOut = () => {
@@ -47,71 +71,148 @@ function App() {
 
     function handleCheckbox(e) {
         e.preventDefault();        
-        if (!isCheckboxOn) {
-            setIsCheckboxOn(true)
-            setMovies(movies.filter(movie => movie.duration <= 40))
-        }
-        else {
-            setIsCheckboxOn(false)
-            setMovies(films)
-        }       
+        setIsCheckboxOn(!isCheckboxOn);
     }
 
-    function handleSavedCheckbox(e) {
-        e.preventDefault();        
-        if (!isSavedCheckboxOn) {
-            setIsSavedCheckboxOn(true)
-            setSavedMovies(savedMovies.filter(movie => movie.duration <= 40))
-        }
-        else {
-            setIsSavedCheckboxOn(false)
-            setSavedMovies(films2)
-        }       
+    // function handleSavedCheckbox(e) {
+    //     e.preventDefault();        
+    //     if (!isSavedCheckboxOn) {
+    //         setIsSavedCheckboxOn(true)
+    //         setSavedMovies(savedMovies.filter(movie => movie.duration <= 40))
+    //     }
+    //     else {
+    //         setIsSavedCheckboxOn(false)
+    //         setSavedMovies(films2)
+    //     }       
+    // }
+
+    const handleSignCheck = () => {
+        mainApi
+            .getUserInfo(localStorage.getItem("token"))
+            .then(() => {
+                setIsLoggedIn(true);
+                history.push("/movies");
+            })
+            .catch((err) => {
+                console.log(err);
+                setIsLoggedIn(false);
+                history.push("/sign-in");
+            });
+    };
+
+    const handleUpdateUser = (email, name) => {
+        setIsRenderLoading(true);
+        mainApi.setUserInfo(email, name, localStorage.getItem("token"))
+            .then((values) => {
+                setCurrentUser(values);
+            })
+            .catch((err) => console.log(err))
+            .finally(() => setIsRenderLoading(false));
+    };
+
+    const handleGetMovies = (filter) => {
+        setIsRenderLoading(true);
+        Promise.all([moviesApi.getMovies(), mainApi.getMovies(localStorage.getItem("token"))])
+        .then((values) => {
+            const [initialMovies, dbMovies] = values;
+            setInitialMovies(initialMovies);
+            setSavedMovies(dbMovies);
+            setFilterName(filter);
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setIsRenderLoading(false));     
     }
 
-    return (        
+    const handleGetSavedMovies = () => {
+        console.log('1')
+        setIsRenderLoading(true);
+        mainApi.getMovies(localStorage.getItem("token"))
+            .then((values) => {
+                setSavedMovies(values);
+            })
+            .catch((err) => console.log(err))
+            .finally(() => setIsRenderLoading(false));
+    }
+
+    const handleFilterSavedMovies = (filter) => {
+        setFilterName(filter);
+    }
+
+    const handleSaveMovie = (movie) => {
+        setIsRenderLoading(true);
+        mainApi.saveMovie(movie, localStorage.getItem("token"))
+            .then((newMovie) => {
+                setSavedMovies([newMovie, ...savedMovies]);
+            })
+            .catch((err) => console.log(err))
+            .finally(() => setIsRenderLoading(false));
+    }
+
+    const handleDeleteMovie = (movieId) => {
+        setIsRenderLoading(true);
+        mainApi.deleteMovie(movieId, localStorage.getItem("token"))
+            .then((movieToDelete) => {
+                setSavedMovies(savedMovies.filter(movie => movie._id !== movieToDelete._id));
+            })
+            .catch((err) => console.log(err))
+            .finally(() => setIsRenderLoading(false));
+    }
+
+    React.useEffect(() => {
+        localStorage.getItem("token") &&
+            handleSignCheck();
+    }, []);
+
+    React.useEffect(() => {
+        isLoggedIn &&
+            mainApi.getUserInfo(localStorage.getItem("token"))
+                .then((data) => {
+                    setCurrentUser(data);
+                })
+                .catch((err) => console.log(err));
+    }, [isLoggedIn]);
+
+    return (     
+        <CurrentUserContext.Provider value={currentUser}> 
             <Switch>
                 <Route exact path="/" >
-                    <Header type={"landing"}/>
+                    <Header loggedIn={isLoggedIn}/>
                     <Main />
                     <Footer />
                 </Route>
-                <Route path="/movies" >
-                    <Header />
-                    <Navigation />
-                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} />
+                <ProtectedRoute path="/movies" loggedIn={isLoggedIn}>
+                    <Header loggedIn={isLoggedIn}/>
+                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleGetMovies}/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        :<MoviesCardList movies={movies}/>
+                        :<MoviesCardList movies={filteredMovies} onSave={handleSaveMovie} onDelete={handleDeleteMovie} />
                     }
                     <Footer />
-                </Route>
-                <Route path="/saved-movies" >
-                    <Header />
-                    <Navigation />
-                    <SearchForm isCheckboxOn={isSavedCheckboxOn} handleCheckbox={handleSavedCheckbox}/>
+                </ProtectedRoute>
+                <ProtectedRoute path="/saved-movies" loggedIn={isLoggedIn}>
+                    <Header loggedIn={isLoggedIn}/>
+                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterSavedMovies} type="saved"/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        : <MoviesCardList movies={savedMovies} type="saved"/>
+                        : <MoviesCardList movies={filteredSavedMovies} onDelete={handleDeleteMovie}  onRender={handleGetSavedMovies} type="saved"/>
                     }
                     <Footer />
-                </Route>
-                <Route path="/profile" >
-                    <Header />
-                    <Navigation />
+                </ProtectedRoute>
+                <ProtectedRoute path="/profile" loggedIn={isLoggedIn}>
+                    <Header loggedIn={isLoggedIn}/>
                     <Profile 
                         onButtonClick={handleSignOut} 
-                        onSubmit={handleUpdate}
+                        onSubmit={handleUpdateUser}
                         buttonText={
                             isRenderLoading 
                             ? "Сохранение..." 
                             : "Сохранить"
                         }/>
-                </Route>
+                </ProtectedRoute>
                 <Route path="/sign-in" >
-                    <Header type={"form"}/>
+                    <Header loggedIn={isLoggedIn} type={"form"}/>
                     <Sign
                         name="in"
                         title="Рады видеть!"
@@ -127,7 +228,7 @@ function App() {
                     />
                 </Route>
                 <Route path="/sign-up" >
-                    <Header type={"form"}/>
+                    <Header loggedIn={isLoggedIn} type={"form"}/>
                     <Sign
                         name="up"
                         title="Добро пожаловать!"
@@ -142,10 +243,11 @@ function App() {
                         link="/sign-in"
                     />
                 </Route>        
-                <Route path="*">
+                <ProtectedRoute path="*">
                     <Page404 />
-                </Route>
+                </ProtectedRoute>
             </Switch>
+        </CurrentUserContext.Provider>
     );
 }
 
