@@ -18,7 +18,7 @@ function Header({
             {type !== "form" && (
                 loggedIn 
                 ?
-                <Navigation />
+                <Navigation type={type}/>
                 :
                 <div className="header__navigation">
                     <Link to="/sign-up" className="header__link">Регистрация</Link>

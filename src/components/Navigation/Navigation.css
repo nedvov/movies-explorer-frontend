@@ -98,6 +98,10 @@
     right: 15px;
 }
 
+.navigation__burger_landing {
+    background-color: #073042;
+}
+
 .navigation___burger:hover {
     opacity: 0.6;
     cursor: pointer;

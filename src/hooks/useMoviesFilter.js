@@ -6,36 +6,45 @@ export function useMoviesFilter() {
     const [initialMovies, setInitialMovies] = React.useState([]);
     const [filteredMovies, setFilteredMovies] = React.useState([]);
     const [filteredSavedMovies, setFilteredSavedMovies] = React.useState([]);
-    const [filterName, setFilterName] = React.useState([]);
+    const [filterName, setFilterName] = React.useState("");
 
     const handleFilter = (array) => {
-        const result = 
-            isCheckboxOn 
-                ? array.filter(movie => (movie.duration <= 40 && movie.nameRU.includes(filterName)))
-                : array.filter(movie => (movie.nameRU.includes(filterName)))
-        return result
-    }
-
-    const handleAggregate = (initailArray, saveArray) => {
-        const relations = {}
-        saveArray.forEach((movie) => {
-            relations[movie.movieId] =  movie._id
-        })
-        const aggregateArray = initailArray.map((movie) => (movie))
-        aggregateArray.forEach((movie) => {Object.keys(relations).includes(movie.id.toString()) ? movie.dbId = relations[movie.id] : movie.dbId = false})
-    return aggregateArray
-    }
+        const result = isCheckboxOn
+            ? array.filter(
+                  (movie) =>
+                      movie.duration <= 40 &&
+                      (movie.nameRU
+                          .toLowerCase()
+                          .includes(filterName.toLowerCase()) ||
+                          movie.nameEN
+                              .toLowerCase()
+                              .includes(filterName.toLowerCase()))
+              )
+            : array.filter(
+                  (movie) =>
+                      movie.nameRU
+                          .toLowerCase()
+                          .includes(filterName.toLowerCase()) ||
+                      movie.nameEN
+                          .toLowerCase()
+                          .includes(filterName.toLowerCase())
+              );
+        return result;
+    };
 
     React.useEffect(() => {
-        setFilteredMovies(handleFilter(handleAggregate(initialMovies, savedMovies)));
+        setFilteredMovies(handleFilter(initialMovies));
+    }, [initialMovies, filterName, isCheckboxOn]);
+
+    React.useEffect(() => {
         setFilteredSavedMovies(handleFilter(savedMovies));
-    }, [initialMovies, savedMovies, isCheckboxOn, filterName]);
+    }, [savedMovies, filterName, isCheckboxOn]);
 
     return {
-        initialMovies, 
-        savedMovies, 
-        filteredMovies, 
-        filterName, 
+        initialMovies,
+        savedMovies,
+        filteredMovies,
+        filterName,
         isCheckboxOn,
         setInitialMovies,
         setSavedMovies,

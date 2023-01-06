@@ -1,8 +1,9 @@
 import React from "react";
 import {Link } from "react-router-dom";
 import { useFormAndValidation } from "../../hooks/useFormAndValidation";
+import { patterns } from "../../consts/patterns"
 
-function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, link}) {
+function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, link, errorText, errorStatus, setErrorSignText, setErrorSignStatus, isRenderLoading}) {
     const { values, handleChange, errors, isValid, resetForm } =
         useFormAndValidation();
 
@@ -17,7 +18,14 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
             { email: "", password: "", name: "" },
             { email: true, password: true, name: true }
         );
+        setErrorSignText("");
+        setErrorSignStatus(false);
     }, []);
+
+    React.useEffect(() => {
+        setErrorSignText("");
+        setErrorSignStatus(false);
+    }, [values, name]);
 
     return (
         <main className="sign">
@@ -47,6 +55,8 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                                 minLength="2"
                                 maxLength="30"
                                 onChange={handleChange}
+                                pattern={patterns.namePattern}
+                                readOnly={!isRenderLoading ? false : true}
                             />
                             <span
                                 className="sign__input-error"
@@ -71,6 +81,7 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                         minLength="5"
                         maxLength="40"
                         onChange={handleChange}
+                        readOnly={!isRenderLoading ? false : true}
                     />
                     <span
                         className="sign__input-error"
@@ -92,6 +103,7 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                         required
                         minLength="4"
                         onChange={handleChange}
+                        readOnly={!isRenderLoading ? false : true}
                     />
                     <span
                         className="sign__input-error"
@@ -99,13 +111,20 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                     >
                         {errors.password}
                     </span>
+                    <span className={
+                            name === "up" 
+                                ? errorStatus 
+                                    ? "sign__form-error sign__form-error_closer sign__form-error_active"
+                                    : "sign__form-error sign__form-error_closer"
+                                :  errorStatus 
+                                    ? "sign__form-error sign__form-error_active" 
+                                    : "sign__form-error"
+                    }>
+                        {errorText}
+                    </span>
                     <input
                         type="submit"
-                        className={
-                            name === "up"
-                                ? "sign__save-button sign__save-button_closer"
-                                : "sign__save-button"
-                        }
+                        className="sign__save-button"
                         id={`sign-${name}__save-button`}
                         value={buttonText}
                         disabled={
@@ -119,7 +138,9 @@ function Sign({ name, title, onSubmit, buttonText, linkDescription, linkText, li
                                     ? (isValid.name && values.name)
                                     : true
                                 )
-                            )
+                            ) 
+                            ||
+                            isRenderLoading
                         }
                     />
                 </fieldset>

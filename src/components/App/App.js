@@ -26,12 +26,20 @@ function App() {
             setIsCheckboxOn,
             setFilterName,
             filteredSavedMovies,
-        } = useMoviesFilter(); 
+        } = useMoviesFilter();
+    const [savedMoviesIds, setSavedMoviesIds] = React.useState([]);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState({
         name: "",
         email: "",
     });
+    const [statusText, setStatusText] = React.useState("Вы еще не искали фильмы");
+    const [initialPath, setInitialPath] = React.useState("/");
+    const [isOnEdit, setIsOnEdit] = React.useState(false);
+    const [errorProfileText, setErrorProfileText] = React.useState("");
+    const [errorProfileStatus, setErrorProfileStatus] = React.useState(false);
+    const [errorSignText, setErrorSignText] = React.useState("");
+    const [errorSignStatus, setErrorSignStatus] = React.useState(false);
     const history = useHistory();
 
     const handleSignIn = (password, email) => {
@@ -39,12 +47,16 @@ function App() {
         mainApi
             .signIn(password, email)
             .then((data) => {
+                setErrorSignStatus(false);
+                setErrorSignText("Вход успешно выполнен")
                 localStorage.setItem("token", data.token);                
                 setIsLoggedIn(true);
                 history.push("/movies");
             })
             .catch((err) => {
                 console.log(err);
+                setErrorSignStatus(true);
+                setErrorSignText(err);
             })
             .finally(() => setIsRenderLoading(false));
     };
@@ -54,10 +66,13 @@ function App() {
         mainApi
             .signUp(password, email, name)
             .then(() => {
-                console.log("Успешно")
+                setErrorSignStatus(false);
+                setErrorSignText("Регистрация успешно завершена")
             })
             .catch((err) => {
                 console.log(err);
+                setErrorSignStatus(true);
+                setErrorSignText(err);
             })
             .finally(() => setIsRenderLoading(false));
     };
@@ -65,8 +80,12 @@ function App() {
     const handleSignOut = () => {
         setIsLoggedIn(false);
         setCurrentUser({name: "", email: ""});
+        setInitialMovies([]);
+        setSavedMovies([]);
+        setSavedMoviesIds([]);
+        setIsOnEdit(false);
         localStorage.removeItem("token");
-        history.push("sign-in");
+        history.push("/");
     };
 
     function handleCheckbox(e) {
@@ -74,24 +93,12 @@ function App() {
         setIsCheckboxOn(!isCheckboxOn);
     }
 
-    // function handleSavedCheckbox(e) {
-    //     e.preventDefault();        
-    //     if (!isSavedCheckboxOn) {
-    //         setIsSavedCheckboxOn(true)
-    //         setSavedMovies(savedMovies.filter(movie => movie.duration <= 40))
-    //     }
-    //     else {
-    //         setIsSavedCheckboxOn(false)
-    //         setSavedMovies(films2)
-    //     }       
-    // }
-
     const handleSignCheck = () => {
         mainApi
             .getUserInfo(localStorage.getItem("token"))
             .then(() => {
                 setIsLoggedIn(true);
-                history.push("/movies");
+                history.push(initialPath);
             })
             .catch((err) => {
                 console.log(err);
@@ -100,38 +107,40 @@ function App() {
             });
     };
 
+    const handleEdit = () => {
+        setIsOnEdit(true);
+    }
+
+    const handleStopEdit = () => {
+        setIsOnEdit(false);
+    }
+
     const handleUpdateUser = (email, name) => {
         setIsRenderLoading(true);
         mainApi.setUserInfo(email, name, localStorage.getItem("token"))
             .then((values) => {
                 setCurrentUser(values);
+                setIsOnEdit(false);
+                setErrorProfileStatus(false);
+                setErrorProfileText("Обновление данных успешно выполнено");
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                setErrorProfileStatus(true);
+                setErrorProfileText(err);
+                console.log(err)
+            })
             .finally(() => setIsRenderLoading(false));
     };
 
     const handleGetMovies = (filter) => {
         setIsRenderLoading(true);
-        Promise.all([moviesApi.getMovies(), mainApi.getMovies(localStorage.getItem("token"))])
+        moviesApi.getMovies()
         .then((values) => {
-            const [initialMovies, dbMovies] = values;
-            setInitialMovies(initialMovies);
-            setSavedMovies(dbMovies);
+            setInitialMovies(values);
             setFilterName(filter);
         })
         .catch((err) => console.log(err))
         .finally(() => setIsRenderLoading(false));     
-    }
-
-    const handleGetSavedMovies = () => {
-        console.log('1')
-        setIsRenderLoading(true);
-        mainApi.getMovies(localStorage.getItem("token"))
-            .then((values) => {
-                setSavedMovies(values);
-            })
-            .catch((err) => console.log(err))
-            .finally(() => setIsRenderLoading(false));
     }
 
     const handleFilterSavedMovies = (filter) => {
@@ -139,68 +148,77 @@ function App() {
     }
 
     const handleSaveMovie = (movie) => {
-        setIsRenderLoading(true);
         mainApi.saveMovie(movie, localStorage.getItem("token"))
             .then((newMovie) => {
                 setSavedMovies([newMovie, ...savedMovies]);
+                setSavedMoviesIds([newMovie.movieId, ...savedMoviesIds]);
+            })
+            .catch((err) => console.log(err))
+    }
+
+    const handleDeleteMovie = (movieId, type) => {
+        type === "saved" && setIsRenderLoading(true);
+        let id = type === "saved" ? movieId : savedMovies.find(movie => movie.movieId === movieId)._id;    
+        mainApi.deleteMovie(id, localStorage.getItem("token"))
+            .then((movieToDelete) => {
+                setSavedMovies(savedMovies.filter(movie => movie._id !== movieToDelete._id));
+                setSavedMoviesIds(savedMoviesIds.filter(id => id !== movieToDelete.movieId));
             })
             .catch((err) => console.log(err))
             .finally(() => setIsRenderLoading(false));
     }
 
-    const handleDeleteMovie = (movieId) => {
-        setIsRenderLoading(true);
-        mainApi.deleteMovie(movieId, localStorage.getItem("token"))
-            .then((movieToDelete) => {
-                setSavedMovies(savedMovies.filter(movie => movie._id !== movieToDelete._id));
-            })
-            .catch((err) => console.log(err))
-            .finally(() => setIsRenderLoading(false));
-    }
+    React.useEffect(() => {
+        isLoggedIn &&
+            Promise.all([mainApi.getUserInfo(localStorage.getItem("token")), mainApi.getMovies(localStorage.getItem("token"))])            
+                .then((values) => {
+                    const [initialUser, initialSavedMovies] = values;
+                    setCurrentUser(initialUser);
+                    setSavedMovies(initialSavedMovies);
+                    initialSavedMovies.length === 0 
+                        ? setStatusText("Ничего не найдено")
+                        : setSavedMoviesIds(initialSavedMovies.map((movie) => movie.movieId));
+                })
+                .catch((err) => {
+                    console.log(err)
+                    setStatusText(err);
+                });
+    }, [isLoggedIn]);
 
     React.useEffect(() => {
         localStorage.getItem("token") &&
             handleSignCheck();
-    }, []);
-
-    React.useEffect(() => {
-        isLoggedIn &&
-            mainApi.getUserInfo(localStorage.getItem("token"))
-                .then((data) => {
-                    setCurrentUser(data);
-                })
-                .catch((err) => console.log(err));
-    }, [isLoggedIn]);
+    }, [initialPath]);
 
     return (     
         <CurrentUserContext.Provider value={currentUser}> 
             <Switch>
                 <Route exact path="/" >
-                    <Header loggedIn={isLoggedIn}/>
+                    <Header loggedIn={isLoggedIn} type="landing"/>
                     <Main />
                     <Footer />
                 </Route>
-                <ProtectedRoute path="/movies" loggedIn={isLoggedIn}>
+                <ProtectedRoute path="/movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
                     <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleGetMovies}/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        :<MoviesCardList movies={filteredMovies} onSave={handleSaveMovie} onDelete={handleDeleteMovie} />
+                        :<MoviesCardList movies={filteredMovies} onSave={handleSaveMovie} onDelete={handleDeleteMovie} text={statusText} savedMoviesIds={savedMoviesIds} type="initial"/>
                     }
                     <Footer />
                 </ProtectedRoute>
-                <ProtectedRoute path="/saved-movies" loggedIn={isLoggedIn}>
+                <ProtectedRoute path="/saved-movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
                     <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterSavedMovies} type="saved"/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        : <MoviesCardList movies={filteredSavedMovies} onDelete={handleDeleteMovie}  onRender={handleGetSavedMovies} type="saved"/>
+                        : <MoviesCardList movies={filteredSavedMovies} onDelete={handleDeleteMovie} text={statusText} type="saved"/>
                     }
                     <Footer />
                 </ProtectedRoute>
-                <ProtectedRoute path="/profile" loggedIn={isLoggedIn}>
+                <ProtectedRoute path="/profile" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
                     <Profile 
                         onButtonClick={handleSignOut} 
@@ -209,7 +227,16 @@ function App() {
                             isRenderLoading 
                             ? "Сохранение..." 
                             : "Сохранить"
-                        }/>
+                        }
+                        isOnEdit={isOnEdit}
+                        handleEdit={handleEdit}
+                        handleStopEdit={handleStopEdit}
+                        errorText={errorProfileText}
+                        setErrorText={setErrorProfileText}
+                        errorStatus={errorProfileStatus}
+                        setErrorStatus={setErrorProfileStatus}
+                        isRenderLoading={isRenderLoading}                 
+                        />
                 </ProtectedRoute>
                 <Route path="/sign-in" >
                     <Header loggedIn={isLoggedIn} type={"form"}/>
@@ -225,6 +252,11 @@ function App() {
                         linkDescription="Ещё не зарегистрированы?"
                         linkText="Регистрация"
                         link="/sign-up"
+                        errorText={errorSignText}
+                        errorStatus={errorSignStatus}
+                        setErrorSignText={setErrorSignText}
+                        setErrorSignStatus={setErrorSignStatus}
+                        isRenderLoading={isRenderLoading}
                     />
                 </Route>
                 <Route path="/sign-up" >
@@ -241,9 +273,14 @@ function App() {
                         linkDescription="Уже зарегистрированы?"
                         linkText="Войти"
                         link="/sign-in"
+                        errorText={errorSignText}
+                        errorStatus={errorSignStatus}
+                        setErrorSignText={setErrorSignText}
+                        setErrorSignStatus={setErrorSignStatus}
+                        isRenderLoading={isRenderLoading}
                     />
                 </Route>        
-                <ProtectedRoute path="*">
+                <ProtectedRoute path="*" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Page404 />
                 </ProtectedRoute>
             </Switch>

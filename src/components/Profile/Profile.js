@@ -1,13 +1,14 @@
 import React from "react";
 import { useFormAndValidation } from "../../hooks/useFormAndValidation";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { patterns } from "../../consts/patterns"
 
-function Profile({ onSubmit, buttonText, onButtonClick }) {
-    const [isOnEdit, setIsOnEdit] = React.useState(false);
+function Profile({ onSubmit, buttonText, onButtonClick, isOnEdit, handleEdit, handleStopEdit, errorText, setErrorText, errorStatus, isRenderLoading }) {
     const { values, handleChange, errors, isValid, resetForm } =
         useFormAndValidation();
 
     const error = 
+        errorText ? errorText :
         (isValid.name && isValid.email) ? "" :
         (isValid.name && !isValid.email) ? `Email: ${errors.email}` :
         (!isValid.name && isValid.email) ? `Name: ${errors.name}` :
@@ -17,12 +18,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        setIsOnEdit(false);
         onSubmit(values.email, values.name);
-    }
-
-    function handleEdit() {
-        setIsOnEdit(true);
     }
 
     React.useEffect(() => {
@@ -31,6 +27,16 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
             { email: "", name: "" },
             { email: true, name: true }
         );
+        isOnEdit && setErrorText("");
+    }, [currentUser, isOnEdit]);
+
+    React.useEffect(() => {
+        isOnEdit && setErrorText("");
+    }, [values]);
+
+    React.useEffect(() => {
+        !errorStatus && setErrorText("");
+        handleStopEdit();
     }, []);
 
     return (
@@ -59,7 +65,8 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                                 minLength="2"
                                 maxLength="30"
                                 onChange={handleChange}
-                                readOnly={isOnEdit ? false : true}
+                                readOnly={(isOnEdit || !isRenderLoading) ? false : true}
+                                pattern={patterns.namePattern}
                             />    
                     </div>
                     <div className="profile__input-container">
@@ -73,7 +80,7 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                             }
                             id={`profile-email`}
                             name="email"
-                            value={values.email ? values.email : "mail@yandex.ru"}
+                            value={values.email ? values.email : ""}
                             required
                             minLength="5"
                             maxLength="40"
@@ -81,11 +88,12 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                             readOnly={isOnEdit ? false : true}
                         />    
                     </div>
+                    <span className={errorStatus ? "profile__error profile__error_active" : "profile__error"}>{error}</span>
                     {
                         isOnEdit 
                         ?
                         <>
-                            <span className="profile__error">{error}</span>
+                            
                             <input
                             type="submit"
                             className="profile__save-button"
@@ -96,10 +104,21 @@ function Profile({ onSubmit, buttonText, onButtonClick }) {
                                     isValid.email &&
                                     isValid.name &&
                                     values.email &&
-                                    values.name
+                                    values.name &&
+                                    !(values.name === currentUser.name &&
+                                    values.email === currentUser.email)
                                 )
+                                ||
+                                isRenderLoading
                             }
                             />
+                            <button
+                                type="button"
+                                className="profile__text-button profile__text-button_active"
+                                onClick={handleStopEdit}
+                            >
+                                Отмена
+                            </button>
                         </>    
                         :
                         <>

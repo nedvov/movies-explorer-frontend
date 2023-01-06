@@ -1,22 +1,31 @@
 import React from "react";
 import { apiURL } from "../../consts/links";
 
-function MoviesCard({ movie, type, onSave, onDelete }) {  
+function MoviesCard({ movie, type, onSave, onDelete, savedMoviesIds }) {  
+
+    const [isLiked, setIsLiked] = React.useState(false);   
     
     function handleLikeClick() {
         onSave(movie);
     }
 
     function handleDislikeClick() {
-        onDelete(movie.dbId);
+        onDelete(movie.id, type);
     }
 
     function handleDeleteClick() {
-        onDelete(movie._id);
+        onDelete(movie._id, type);
     }
 
     const durationM = movie.duration % 60;
     const durationH = (movie.duration - durationM) / 60;
+
+    React.useEffect(() => {
+        type !== "saved" &&
+        savedMoviesIds.includes(movie.id)
+            ? setIsLiked(true)
+            : setIsLiked(false)
+    }, [savedMoviesIds, movie.id]);
         
     
 
@@ -39,7 +48,7 @@ function MoviesCard({ movie, type, onSave, onDelete }) {
                         type === "saved"
                             ? "movies__delete"
                             :
-                            movie.dbId
+                            isLiked
                                 ? "movies__like movies__like_active"
                                 : "movies__like"
                     }
@@ -47,7 +56,7 @@ function MoviesCard({ movie, type, onSave, onDelete }) {
                         type === "saved"
                             ? handleDeleteClick
                             :
-                            movie.dbId
+                            isLiked
                                 ? handleDislikeClick
                                 : handleLikeClick
                     }

@@ -1,0 +1,14 @@
+.status {
+    margin: 79px 0 0;
+    display: flex;
+    justify-content: center;
+}
+
+.status__text {
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 40px;
+    color: #FFFFFF;
+}
