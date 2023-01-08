@@ -22,3 +22,4 @@
 
 Ссылка на макет на Я.Диск https://disk.yandex.ru/d/JFNSEWLQ84brCw
 Сам проект расположен по адресу: https://nedvov.movies.nomoredomains.club/
+Pull Request: https://github.com/nedvov/movies-explorer-frontend/pull/2
