@@ -9,6 +9,7 @@ import MoviesCardList from "../Movies/MoviesCardList";
 import Preloader from "../Preloader/Preloader";
 import Profile from "../Profile/Profile";
 import Page404 from "../Page404/Page404";
+import Popup from "../Popup/Popup";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import { mainApi } from "../../utils/MainApi";
 import { moviesApi } from "../../utils/MoviesApi";
@@ -25,6 +26,7 @@ function App() {
             isCheckboxOn, 
             setIsCheckboxOn,
             setFilterName,
+            filterName,
             filteredSavedMovies,
         } = useMoviesFilter();
     const [savedMoviesIds, setSavedMoviesIds] = React.useState([]);
@@ -33,13 +35,18 @@ function App() {
         name: "",
         email: "",
     });
-    const [statusText, setStatusText] = React.useState("Вы еще не искали фильмы");
+    const [initialMoviesStatusText, setInitialMoviesStatusText] = React.useState("Вы еще не искали фильмы");
+    const [savedMoviesStatusText, setSavedMoviesStatusText] = React.useState("У Вас еще нет сохраненных фильмов");
     const [initialPath, setInitialPath] = React.useState("/");
     const [isOnEdit, setIsOnEdit] = React.useState(false);
     const [errorProfileText, setErrorProfileText] = React.useState("");
     const [errorProfileStatus, setErrorProfileStatus] = React.useState(false);
     const [errorSignText, setErrorSignText] = React.useState("");
     const [errorSignStatus, setErrorSignStatus] = React.useState(false);
+    const [errorInitialMoviesStatus, setErrorInitialMoviesStatus] = React.useState(false);
+    const [errorSavedMoviesStatus, setErrorSavedMoviesStatus] = React.useState(false);
+    const [errorInitialMoviesText, setErrorInitialMoviesText] = React.useState("");
+    const [errorSavedMoviesText, setErrorSavedMoviesText] = React.useState("");
     const history = useHistory();
 
     const handleSignIn = (password, email) => {
@@ -89,8 +96,9 @@ function App() {
     };
 
     function handleCheckbox(e) {
-        e.preventDefault();        
+        e.preventDefault();  
         setIsCheckboxOn(!isCheckboxOn);
+        localStorage.setItem("isShortMovie", !isCheckboxOn);
     }
 
     const handleSignCheck = () => {
@@ -113,6 +121,11 @@ function App() {
 
     const handleStopEdit = () => {
         setIsOnEdit(false);
+    }
+
+    const handleClosePopups = () => {
+        setErrorSavedMoviesStatus(false);
+        setErrorInitialMoviesStatus(false);
     }
 
     const handleUpdateUser = (email, name) => {
@@ -138,12 +151,20 @@ function App() {
         .then((values) => {
             setInitialMovies(values);
             setFilterName(filter);
+            localStorage.setItem("movies", JSON.stringify(values));
+            localStorage.setItem("filter", filter);
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+            setErrorInitialMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз...");
+            setErrorInitialMoviesStatus(true);
+            console.log(err)
+        })
         .finally(() => setIsRenderLoading(false));     
     }
 
     const handleFilterSavedMovies = (filter) => {
+        savedMovies.length === 0 && handleGetSavedMovies();
+        localStorage.setItem("filter", filter);
         setFilterName(filter);
     }
 
@@ -153,7 +174,11 @@ function App() {
                 setSavedMovies([newMovie, ...savedMovies]);
                 setSavedMoviesIds([newMovie.movieId, ...savedMoviesIds]);
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                setErrorInitialMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз...");
+                setErrorInitialMoviesStatus(true);
+                console.log(err)
+            })
     }
 
     const handleDeleteMovie = (movieId, type) => {
@@ -164,31 +189,61 @@ function App() {
                 setSavedMovies(savedMovies.filter(movie => movie._id !== movieToDelete._id));
                 setSavedMoviesIds(savedMoviesIds.filter(id => id !== movieToDelete.movieId));
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                console.log(err)
+                if (type === "saved") {
+                    setErrorSavedMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз...");
+                    setErrorSavedMoviesStatus(true);
+                }
+                else {
+                    setErrorInitialMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз..."); 
+                    setErrorInitialMoviesStatus(true);
+                }
+            })
             .finally(() => setIsRenderLoading(false));
     }
 
+    const handleGetSavedMovies = () => {
+        setIsRenderLoading(true);
+        mainApi.getMovies(localStorage.getItem("token"))
+            .then((values) => {
+                setSavedMovies(values);
+                values.length === 0 
+                    ? setSavedMoviesStatusText("У Вас еще нет сохраненных фильмов")
+                    : setSavedMoviesIds(values.map((movie) => movie.movieId));
+            })
+            .catch((err) => {
+                setErrorSavedMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз...");
+                setErrorSavedMoviesStatus(true);
+                console.log(err)
+            })
+            .finally(() => setIsRenderLoading(false));     
+    }
+
+    const handleGetCurrentUser = () => {
+        mainApi.getUserInfo(localStorage.getItem("token"))
+            .then((values) => {
+                setCurrentUser(values);
+            })
+            .catch((err) => {
+                console.log(err)
+            });
+    }
+
     React.useEffect(() => {
-        isLoggedIn &&
-            Promise.all([mainApi.getUserInfo(localStorage.getItem("token")), mainApi.getMovies(localStorage.getItem("token"))])            
-                .then((values) => {
-                    const [initialUser, initialSavedMovies] = values;
-                    setCurrentUser(initialUser);
-                    setSavedMovies(initialSavedMovies);
-                    initialSavedMovies.length === 0 
-                        ? setStatusText("Ничего не найдено")
-                        : setSavedMoviesIds(initialSavedMovies.map((movie) => movie.movieId));
-                })
-                .catch((err) => {
-                    console.log(err)
-                    setStatusText(err);
-                });
+        isLoggedIn && Promise.all(handleGetCurrentUser(), handleGetSavedMovies())
     }, [isLoggedIn]);
 
     React.useEffect(() => {
         localStorage.getItem("token") &&
             handleSignCheck();
     }, [initialPath]);
+
+    React.useEffect(() => {
+        localStorage.getItem("movies") && setInitialMovies(JSON.parse(localStorage.getItem("movies")));
+        localStorage.getItem("filter") && setFilterName(localStorage.getItem("filter"));
+        localStorage.getItem("isShortMovie") && setIsCheckboxOn(localStorage.getItem("isShortMovie") === "true");
+    }, []);
 
     return (     
         <CurrentUserContext.Provider value={currentUser}> 
@@ -200,21 +255,23 @@ function App() {
                 </Route>
                 <ProtectedRoute path="/movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
-                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleGetMovies}/>
+                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleGetMovies} filter={filterName}/>
+                    <Popup text={errorInitialMoviesText} isOpened={errorInitialMoviesStatus} onClose={handleClosePopups}/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        :<MoviesCardList movies={filteredMovies} onSave={handleSaveMovie} onDelete={handleDeleteMovie} text={statusText} savedMoviesIds={savedMoviesIds} type="initial"/>
+                        :<MoviesCardList movies={filteredMovies} onSave={handleSaveMovie} onDelete={handleDeleteMovie} text={initialMoviesStatusText} savedMoviesIds={savedMoviesIds} type="initial"/>
                     }
                     <Footer />
                 </ProtectedRoute>
                 <ProtectedRoute path="/saved-movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
-                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterSavedMovies} type="saved"/>
+                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterSavedMovies} type="saved" filter={filterName} />
+                    <Popup text={errorSavedMoviesText} isOpened={errorSavedMoviesStatus} onClose={handleClosePopups}/>
                     {
                         isRenderLoading 
                         ? <Preloader />
-                        : <MoviesCardList movies={filteredSavedMovies} onDelete={handleDeleteMovie} text={statusText} type="saved"/>
+                        : <MoviesCardList movies={filteredSavedMovies} onDelete={handleDeleteMovie} text={savedMoviesStatusText} type="saved"/>
                     }
                     <Footer />
                 </ProtectedRoute>

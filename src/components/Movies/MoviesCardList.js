@@ -2,7 +2,7 @@ import React from "react";
 import MoviesCard from "./MoviesCard";
 import StatusText from "../StatusText/StatusText";
 
-function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds }) {    
+function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds, status }) {    
    
     const [width, setWidth] = React.useState(window.innerWidth);    
 
@@ -48,7 +48,7 @@ function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds }
     return (
         <main className="movies">
             {
-            movies.length === 0 
+            movies.length === 0
             ? <StatusText text={text}/>
             : 
                 <>
