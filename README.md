@@ -21,4 +21,4 @@
 18. Регистрация и авторизация
 
 Ссылка на макет на Я.Диск https://disk.yandex.ru/d/JFNSEWLQ84brCw
-Сам проект расположен по адрусу: https://nedvov.movies.nomoredomains.club/
+Сам проект расположен по адресу: https://nedvov.movies.nomoredomains.club/
