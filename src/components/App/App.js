@@ -25,11 +25,15 @@ function App() {
             filteredMovies, 
             isCheckboxOn, 
             setIsCheckboxOn,
+            isSavedCheckboxOn,
+            setIsSavedCheckboxOn,
             setFilterName,
             filterName,
+            setFilterSavedName,
+            filterSavedName,
             filteredSavedMovies,
             setFilteredMovies,
-            setFilteredSavedMovies
+            setFilteredSavedMovies,
         } = useMoviesFilter();
     const [savedMoviesIds, setSavedMoviesIds] = React.useState([]);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -99,6 +103,10 @@ function App() {
         localStorage.removeItem("token");
         setFilteredMovies([]);
         setFilteredSavedMovies([]);
+        setIsCheckboxOn(false);
+        setIsSavedCheckboxOn(false);
+        setFilterName("");
+        setFilterSavedName("");
         localStorage.removeItem("token");
         localStorage.removeItem("movies");
         localStorage.removeItem("filter");
@@ -110,6 +118,11 @@ function App() {
         e.preventDefault();  
         setIsCheckboxOn(!isCheckboxOn);
         localStorage.setItem("isShortMovie", !isCheckboxOn);
+    }
+
+    function handleSavedCheckbox(e) {
+        e.preventDefault();  
+        setIsSavedCheckboxOn(!isSavedCheckboxOn);
     }
 
     const handleSignCheck = () => {
@@ -179,8 +192,7 @@ function App() {
 
     const handleFilterSavedMovies = (filter) => {
         savedMovies.length === 0 && handleGetSavedMovies();
-        localStorage.setItem("filter", filter);
-        setFilterName(filter);
+        setFilterSavedName(filter);
     }
 
     const handleSaveMovie = (movie) => {
@@ -246,7 +258,7 @@ function App() {
     }
 
     React.useEffect(() => {
-        isLoggedIn && Promise.all(handleGetCurrentUser(), handleGetSavedMovies())
+        isLoggedIn && handleGetCurrentUser()
     }, [isLoggedIn]);
 
     React.useEffect(() => {
@@ -255,10 +267,15 @@ function App() {
     }, [initialPath]);
 
     React.useEffect(() => {
-        localStorage.getItem("movies") && setInitialMovies(JSON.parse(localStorage.getItem("movies")));
-        localStorage.getItem("filter") && setFilterName(localStorage.getItem("filter"));
-        localStorage.getItem("isShortMovie") && setIsCheckboxOn(localStorage.getItem("isShortMovie") === "true");
-    }, []);
+        if (isLoggedIn) {
+            localStorage.getItem("movies") && setInitialMovies(JSON.parse(localStorage.getItem("movies")));
+            localStorage.getItem("filter") && setFilterName(localStorage.getItem("filter"));
+            localStorage.getItem("isShortMovie") && setIsCheckboxOn(localStorage.getItem("isShortMovie") === "true");
+            setFilterSavedName("");
+            setIsSavedCheckboxOn("");
+            handleGetSavedMovies();
+        }
+    }, [isLoggedIn]);
 
     return (     
         <CurrentUserContext.Provider value={currentUser}> 
@@ -281,7 +298,7 @@ function App() {
                 </ProtectedRoute>
                 <ProtectedRoute path="/saved-movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
-                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterSavedMovies} type="saved" filter={filterName} />
+                    <SearchForm isCheckboxOn={isSavedCheckboxOn} handleCheckbox={handleSavedCheckbox} onSubmit={handleFilterSavedMovies} type="saved" filter={filterSavedName} />
                     <Popup text={errorSavedMoviesText} isOpened={errorSavedMoviesStatus} onClose={handleClosePopups}/>
                     {
                         isRenderLoading 

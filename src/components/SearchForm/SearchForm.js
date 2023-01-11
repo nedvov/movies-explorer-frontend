@@ -21,7 +21,7 @@ function SearchForm({onSubmit, isCheckboxOn, handleCheckbox, type, filter }) {
             { name: "" },
             { name: true }
         );
-    }, []);
+    }, [filter]);
 
     return (
         <>
