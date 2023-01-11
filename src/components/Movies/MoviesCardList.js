@@ -1,15 +1,16 @@
 import React from "react";
 import MoviesCard from "./MoviesCard";
 import StatusText from "../StatusText/StatusText";
+import { moviesAttributes } from "../../consts/consts"
 
-function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds, status }) {    
+function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds }) {    
    
     const [width, setWidth] = React.useState(window.innerWidth);    
 
     const moviesInString = 
-       (width > 1279) ? 4 :
-       (width > 1023) ? 3 :
-       (width > 767) ? 2 : 1;
+       (width > 1279) ? moviesAttributes.moviesInString.desktop :
+       (width > 1023) ? moviesAttributes.moviesInString.laptop :
+       (width > 767) ? moviesAttributes.moviesInString.tablet : moviesAttributes.moviesInString.mobile;
     ;
 
     const [moviesCount, setMoviesCount] = React.useState( 7 * moviesInString);
@@ -17,7 +18,7 @@ function MoviesCardList({ movies, type, onSave, onDelete, text, savedMoviesIds, 
     function handleAddClick() {
         setMoviesCount(
             moviesInString === 1
-            ? moviesCount + 5
+            ? moviesCount + moviesAttributes.moviesAddOnMobile
             : moviesCount + (moviesInString - (moviesCount % moviesInString)) 
         );
     }

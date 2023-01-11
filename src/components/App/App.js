@@ -28,6 +28,8 @@ function App() {
             setFilterName,
             filterName,
             filteredSavedMovies,
+            setFilteredMovies,
+            setFilteredSavedMovies
         } = useMoviesFilter();
     const [savedMoviesIds, setSavedMoviesIds] = React.useState([]);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -76,6 +78,9 @@ function App() {
                 setErrorSignStatus(false);
                 setErrorSignText("Регистрация успешно завершена")
             })
+            .then(() => {
+                handleSignIn(password, email);
+            })
             .catch((err) => {
                 console.log(err);
                 setErrorSignStatus(true);
@@ -92,6 +97,12 @@ function App() {
         setSavedMoviesIds([]);
         setIsOnEdit(false);
         localStorage.removeItem("token");
+        setFilteredMovies([]);
+        setFilteredSavedMovies([]);
+        localStorage.removeItem("token");
+        localStorage.removeItem("movies");
+        localStorage.removeItem("filter");
+        localStorage.removeItem("isShortMovie");
         history.push("/");
     };
 
@@ -145,14 +156,12 @@ function App() {
             .finally(() => setIsRenderLoading(false));
     };
 
-    const handleGetMovies = (filter) => {
+    const handleGetMovies = () => {
         setIsRenderLoading(true);
         moviesApi.getMovies()
         .then((values) => {
             setInitialMovies(values);
-            setFilterName(filter);
             localStorage.setItem("movies", JSON.stringify(values));
-            localStorage.setItem("filter", filter);
         })
         .catch((err) => {
             setErrorInitialMoviesText("Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз...");
@@ -160,6 +169,12 @@ function App() {
             console.log(err)
         })
         .finally(() => setIsRenderLoading(false));     
+    }
+
+    const handleFilterMovies = (filter) => {
+        !localStorage.getItem("movies") && handleGetMovies();
+        localStorage.setItem("filter", filter);
+        setFilterName(filter);
     }
 
     const handleFilterSavedMovies = (filter) => {
@@ -255,7 +270,7 @@ function App() {
                 </Route>
                 <ProtectedRoute path="/movies" loggedIn={isLoggedIn} setInitialPath={setInitialPath}>
                     <Header loggedIn={isLoggedIn}/>
-                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleGetMovies} filter={filterName}/>
+                    <SearchForm isCheckboxOn={isCheckboxOn} handleCheckbox={handleCheckbox} onSubmit={handleFilterMovies} filter={filterName}/>
                     <Popup text={errorInitialMoviesText} isOpened={errorInitialMoviesStatus} onClose={handleClosePopups}/>
                     {
                         isRenderLoading 

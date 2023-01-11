@@ -1,4 +1,5 @@
 import React from "react";
+import { moviesAttributes } from "../consts/consts"
 
 export function useMoviesFilter() {
     const [isCheckboxOn, setIsCheckboxOn] = React.useState(false);
@@ -12,7 +13,7 @@ export function useMoviesFilter() {
         const result = isCheckboxOn
             ? array.filter(
                   (movie) =>
-                      movie.duration <= 40 &&
+                      movie.duration <= moviesAttributes.shortMovieDuration &&
                       (movie.nameRU
                           .toLowerCase()
                           .includes(filterName.toLowerCase()) ||
@@ -52,6 +53,7 @@ export function useMoviesFilter() {
         setFilterName,
         handleFilter,
         filteredSavedMovies,
+        setFilteredMovies,
         setFilteredSavedMovies,
     };
 }
