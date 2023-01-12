@@ -15,12 +15,11 @@
 11. Использование возможностей JSX
 13. Использование хук
 14. Механизм роутинга
-
-На следующей итерации будут применены:
-
 15. Использование API для взаимодействия с сервером
 16. Редиректы  
-17. Исрользование localStorage
+17. Использование localStorage
 18. Регистрация и авторизация
 
 Ссылка на макет на Я.Диск https://disk.yandex.ru/d/JFNSEWLQ84brCw
+Сам проект расположен по адресу: https://nedvov.movies.nomoredomains.club/
+Pull Request: https://github.com/nedvov/movies-explorer-frontend/pull/2

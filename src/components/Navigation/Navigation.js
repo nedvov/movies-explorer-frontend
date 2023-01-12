@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-function Navigation() {
+function Navigation({type}) {
     
     const [isBurgerOpened, setIsBurgerOpened] = React.useState(false);
 
@@ -17,7 +17,7 @@ function Navigation() {
     <>
         <div className={isBurgerOpened ? "navigation navigation_opened" : "navigation"}>
                 <nav className="navigation__links">
-                    <NavLink to="/" className="navigation__link navigation__link_hidden">Главная</NavLink>
+                    <NavLink exact to="/" className="navigation__link navigation__link_hidden" activeClassName="navigation__link_active" onClick={closeBurger}>Главная</NavLink>
                     <NavLink to="/movies" className="navigation__link" activeClassName="navigation__link_active" onClick={closeBurger}>Фильмы</NavLink>                    
                     <NavLink to="/saved-movies" className="navigation__link" activeClassName="navigation__link_active" onClick={closeBurger}>Сохраненные фильмы</NavLink>
                 </nav>              
@@ -26,7 +26,16 @@ function Navigation() {
                     <div className="navigation__account-image"></div>
                 </NavLink>            
         </div>
-        <button type="button" className={isBurgerOpened ? "navigation__burger navigation__burger_opened" : "navigation__burger"} onClick={clickBurger}></button>
+        <button 
+            type="button" 
+            className={
+                isBurgerOpened 
+                ? "navigation__burger navigation__burger_opened" 
+                : type === "landing" 
+                    ? "navigation__burger navigation__burger_landing" 
+                    : "navigation__burger"
+            } 
+            onClick={clickBurger}></button>
     </>
     );
 }

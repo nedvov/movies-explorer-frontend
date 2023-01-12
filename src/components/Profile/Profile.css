@@ -117,10 +117,7 @@
     text-align: center;
     border: none;
     padding: 0;
-}
-
-.profile__text-button:first-of-type {
-    margin: 220px auto 16px;
+    margin: 15px auto;
 }
 
 .profile__text-button_active {
@@ -140,11 +137,14 @@
     font-size: 11px;
     line-height: 13px;
     text-align: center;
-    color: #FF004C;
+    color: #3DDC84;
     min-height: 40px;
     margin: 163px auto 20px;
 }
 
+.profile__error_active {
+    color: #FF004C;
+}
 
 @media screen and (max-width:1023px) {
     .profile__title {

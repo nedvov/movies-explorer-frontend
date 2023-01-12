@@ -1,23 +1,40 @@
 import React from "react";
+import { apiURL } from "../../consts/links";
 
-function MoviesCard({ movie, type }) {  
-    const [isLiked, setIsLiked] = React.useState(false);
+function MoviesCard({ movie, type, onSave, onDelete, savedMoviesIds }) {  
+
+    const [isLiked, setIsLiked] = React.useState(false);   
     
     function handleLikeClick() {
-        setIsLiked(!isLiked);
+        onSave(movie);
+    }
+
+    function handleDislikeClick() {
+        onDelete(movie.id, type);
+    }
+
+    function handleDeleteClick() {
+        onDelete(movie._id, type);
     }
 
     const durationM = movie.duration % 60;
     const durationH = (movie.duration - durationM) / 60;
+
+    React.useEffect(() => {
+        type !== "saved" &&
+        savedMoviesIds.includes(movie.id)
+            ? setIsLiked(true)
+            : setIsLiked(false)
+    }, [savedMoviesIds, movie.id]);
         
     
 
     return (
-        <li className="movies__item" id={movie.id}>
+        <li className="movies__item" id={type === "saved" ? movie.movieId : movie.id}>
             <a href={movie.trailerLink} target="_blank" rel="noreferrer">
                 <img
                     className="movies__image"
-                    src={"https://api.nomoreparties.co" + movie.image.url}
+                    src={apiURL.moviesApiUrl + movie.image.url}
                     alt={movie.nameRU}
                 />
             </a>            
@@ -28,14 +45,21 @@ function MoviesCard({ movie, type }) {
                 </div>
                 <button
                     className={
-                        type === "saved" 
+                        type === "saved"
                             ? "movies__delete"
                             :
                             isLiked
                                 ? "movies__like movies__like_active"
                                 : "movies__like"
                     }
-                    onClick={handleLikeClick}
+                    onClick={
+                        type === "saved"
+                            ? handleDeleteClick
+                            :
+                            isLiked
+                                ? handleDislikeClick
+                                : handleLikeClick
+                    }
                     type="button"
                 />
             </div>

@@ -1,8 +1,10 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
+import Navigation from "../Navigation/Navigation";
 
 function Header({
-    type
+    type,
+    loggedIn,
 }) {
     const history = useHistory();
 
@@ -13,7 +15,11 @@ function Header({
     return (
         <header className={type ? `header header_${type}` : "header"}>
             <Link className={type === "form" ? `header__logo header__logo_form` : "header__logo"} to="/"/>
-            {type === "landing" && (
+            {type !== "form" && (
+                loggedIn 
+                ?
+                <Navigation type={type}/>
+                :
                 <div className="header__navigation">
                     <Link to="/sign-up" className="header__link">Регистрация</Link>
                     <button

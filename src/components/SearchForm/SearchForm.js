@@ -1,15 +1,15 @@
 import React from "react";
 import { useFormAndValidation } from "../../hooks/useFormAndValidation";
 
-function SearchForm({onSubmit, isCheckboxOn, handleCheckbox }) { 
+function SearchForm({onSubmit, isCheckboxOn, handleCheckbox, type, filter }) {
     
     const { values, handleChange, isValid, resetForm, setIsValid } =
         useFormAndValidation();
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (values.name) {
-            onSubmit(values.name, isCheckboxOn);
+        if (values.name || type === "saved") {
+            onSubmit(values.name);
         } else {
             setIsValid({name: false})           
         }
@@ -17,11 +17,11 @@ function SearchForm({onSubmit, isCheckboxOn, handleCheckbox }) {
    
     React.useEffect(() => {
         resetForm(
-            { name: "" },
+            { name: filter ? filter : "" },
             { name: "" },
             { name: true }
         );
-    }, []);
+    }, [filter]);
 
     return (
         <>
@@ -35,10 +35,11 @@ function SearchForm({onSubmit, isCheckboxOn, handleCheckbox }) {
                                 ? "search-form__input"
                                 : "search-form__input search-form__input_active"
                             }
-                            id={`search-form-name`}
-                            name="name"
-                            onChange={handleChange}
-                            placeholder={isValid.name ? "Фильм" : "Нужно ввести ключевое слово"}
+                        id={`search-form-name`}
+                        name="name"
+                        onChange={handleChange}
+                        placeholder={isValid.name ? "Фильм" : "Нужно ввести ключевое слово"}
+                        value={values.name ? values.name : ""}
                     />
                     <input
                         type="submit"

@@ -9,6 +9,7 @@
 @import url(./components/Navigation/Navigation.css);
 @import url(./components/NavTab/NavTab.css);
 @import url(./components/Page404/Page404.css);
+@import url(./components/Popup/Popup.css);
 @import url(./components/Portfolio/Portfolio.css);
 @import url(./components/Preloader/Preloader.css);
 @import url(./components/Profile/Profile.css);
@@ -17,3 +18,4 @@
 @import url(./components/SectionTitle/SectionTitle.css);
 @import url(./components/Sign/Sign.css);
 @import url(./components/Techs/Techs.css);
+@import url(./components/StatusText/StatusText.css);
